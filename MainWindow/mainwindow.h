@@ -5,7 +5,7 @@
 
 class QAction;
 class QLabel;
-//class FindDialog;
+class FindDialog;
 class Spreadsheet;
 
 class MainWindow:public QMainWindow
@@ -20,12 +20,12 @@ class MainWindow:public QMainWindow
 			void open();
 			bool save();
 			bool saveAs();
-			//void find();
-			//void gotocell();
+			void find();
+			void goToCell();
 			//void sort();
 			//void about();		
 			
-			//void openRecentFile();
+			void openRecentFile();
 			void updateStatusBar();
 			//void spreadsheetModified();
 		private:
@@ -40,15 +40,16 @@ class MainWindow:public QMainWindow
 			bool loadFile(const QString &fileName);
 			bool saveFile(const QString &fileName);
 			void setCurrentFile(const QString &fileName);
-			//void updateRecentFileActions();
+			void updateRecentFileActions();
 			QString strippedName(const QString &fullFileName);
+			QString curFile;
 			
 			Spreadsheet *spreadsheet;
-			//FindDialog *findDialog;
+			FindDialog *findDialog;
 			QLabel *locationLabel;
 			QLabel *formulaLabel;
 			QStringList recentFiles;
-			QString curFile;
+			
 			
 			enum{MaxRecentFiles=5};
 			QAction *recentFileActions[MaxRecentFiles];
@@ -58,8 +59,11 @@ class MainWindow:public QMainWindow
 			QAction *saveAction;
 			QAction *saveAsAction;
 			QAction *exitAction;
+			QAction *findAction;
+			QAction *goToCellAction;
 			QAction *selectAllAction;
 			QAction *showGridAction;
+			QAction *aboutQtAction;
 			
 			QMenu *fileMenu;
 			QMenu *editMenu;
@@ -73,7 +77,7 @@ class MainWindow:public QMainWindow
 			
 			
 			
-			QAction *aboutQtAction;
+			
 				
 		};
 		
