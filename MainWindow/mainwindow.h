@@ -4,8 +4,8 @@
 #include <QMainWindow>
 
 class QAction;
-class QLable;
-class FindDialog;
+class QLabel;
+//class FindDialog;
 class Spreadsheet;
 
 class MainWindow:public QMainWindow
@@ -20,31 +20,31 @@ class MainWindow:public QMainWindow
 			void open();
 			bool save();
 			bool saveAs();
-			void find();
-			void gotocell();
-			void sort();
-			void about();		
+			//void find();
+			//void gotocell();
+			//void sort();
+			//void about();		
 			
-			void openRecentFile();
+			//void openRecentFile();
 			void updateStatusBar();
-			void spreadsheetModified();
+			//void spreadsheetModified();
 		private:
 			void createActions();
 			void createMenus();
 			void createContextMenu();
 			void createToolBars();
 			void createStatusBar();
-			void readSettings();
-			void writeSettings();
+			//void readSettings();
+			//void writeSettings();
 			bool okToContinue();
 			bool loadFile(const QString &fileName);
 			bool saveFile(const QString &fileName);
 			void setCurrentFile(const QString &fileName);
-			void updateRecentFileActions();
+			//void updateRecentFileActions();
 			QString strippedName(const QString &fullFileName);
 			
 			Spreadsheet *spreadsheet;
-			FindDialog *findDialog;
+			//FindDialog *findDialog;
 			QLabel *locationLabel;
 			QLabel *formulaLabel;
 			QStringList recentFiles;
@@ -53,14 +53,25 @@ class MainWindow:public QMainWindow
 			enum{MaxRecentFiles=5};
 			QAction *recentFileActions[MaxRecentFiles];
 			QAction *separatorAction;
+			QAction *newAction;
+			QAction *openAction;
+			QAction *saveAction;
+			QAction *saveAsAction;
+			QAction *exitAction;
+			QAction *selectAllAction;
+			QAction *showGridAction;
 			
 			QMenu *fileMenu;
 			QMenu *editMenu;
+			QMenu *selectSubMenu;
+			QMenu *toolsMenu;
+			QMenu *optionsMenu;
+			QMenu *helpMenu;
 			
 			QToolBar *fileToolBar;
 			QToolBar *editToolBar;
-			QAction *newAction;
-			QAction *openAction;
+			
+			
 			
 			QAction *aboutQtAction;
 				
