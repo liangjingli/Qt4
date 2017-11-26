@@ -3,7 +3,7 @@
 #include "gotocelldialog.h"
 #include "mainwindow.h"
 #include "sortdialog.h"
-//#include "spreadsheet.h"
+#include "spreadsheet.h"
 
 #include <QApplication>
 
@@ -18,11 +18,13 @@ MainWindow::MainWindow()
 		createToolBars();
 		createStatusBar();
 	
-		//readSettings();
+		readSettings();
+		writeSettings();
 		
 		findDialog=0;
 		//setWindowIcon(QIcon(":/images/icon.png"));
 		setCurrentFile("");
+		setAttribute(Qt::WA_DeleteOnClose);
 		}
 		
 void MainWindow::createActions()
@@ -55,10 +57,15 @@ void MainWindow::createActions()
 			connect(recentFileActions[i],SIGNAL(triggered()),this,SLOT(openRecentFile()));
 			}
 			
+		closeAction=new QAction(tr("&Close"),this);
+		closeAction->setShortcut(QKeySequence::Close);
+		closeAction->setStatusTip(tr("Close this window"));
+		connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
+			
 		exitAction=new QAction(tr("E&xit"),this);
 		exitAction->setShortcut(tr("Ctrl+Q"));
 		exitAction->setStatusTip(tr("Exit the application"));
-		connect(exitAction,SIGNAL(triggered()),this,SLOT(close()));
+		connect(exitAction,SIGNAL(triggered()),qApp,SLOT(closeAllWindows()));
 		
 		findAction=new QAction(tr("Find"),this);
 		//findAction->setShortcut(tr())
@@ -80,6 +87,10 @@ void MainWindow::createActions()
 		showGridAction->setStatusTip(tr("Show or hide the spreadsheet's grid"));
 		connect(showGridAction,SIGNAL(toggled(bool)),this,SLOT(setShowGrid(bool)));
 		
+		aboutAction=new QAction(tr("About Spreadsheet"),this);
+		aboutAction->setStatusTip(tr("Show the information about Spreadsheet"));
+		connect(aboutAction,SIGNAL(triggered()),this,SLOT(about()));
+		
 		aboutQtAction=new QAction(tr("About &Qt"),this);
 		aboutQtAction->setStatusTip(tr("Show the Qt library's About Box"));
 		connect(aboutQtAction,SIGNAL(triggered()),qApp,SLOT(aboutQt()));
@@ -98,6 +109,7 @@ void MainWindow::createMenus()
 			fileMenu->addAction(recentFileActions[i]);
 			}
 		fileMenu->addSeparator();
+		fileMenu->addAction(closeAction);
 		fileMenu->addAction(exitAction);
 		
 		editMenu=menuBar()->addMenu(tr("&Edit"));
@@ -125,7 +137,7 @@ void MainWindow::createMenus()
 		menuBar()->addSeparator();
 		
 		helpMenu=menuBar()->addMenu(tr("&Help"));
-		//helpMenu->addAction(aboutAction);
+		helpMenu->addAction(aboutAction);
 		helpMenu->addAction(aboutQtAction);
 		
 		
@@ -181,13 +193,19 @@ void MainWindow::updateStatusBar()
 		//formulaLabel->setText(spreadsheet->currentFormula());
 		}
 		
-void MainWindow::newFile()
+/*void MainWindow::newFile()
 	{
 		if(okToContinue())
 		{
 		//spreadsheet->clear();
 		setCurrentFile("");
 			}
+		}*/
+		
+void MainWindow::newFile()
+	{
+		MainWindow *mainWin= new MainWindow;
+		mainWin->show();
 		}
 		
 bool MainWindow::okToContinue()
@@ -285,9 +303,14 @@ void MainWindow::setCurrentFile(const QString &fileName)
 		if(!curFile.isEmpty())
 			{
 				shownName=strippedName(curFile);
-				//recentFiles.removeAll(curFile);
-				//recentFiles.prepend(curFile);
+				recentFiles.removeAll(curFile);
+				recentFiles.prepend(curFile);
 				//updateRecentFileActions();
+				foreach(QWidget *win, QApplication::topLevelWidgets())
+					{
+						if(MainWindow *mainWin=qobject_cast<MainWindow *>(win))
+							mainWin->updateRecentFileActions();
+						}
 				}
 			setWindowTitle(tr("%1[*]-2%").arg(shownName).arg(tr("Spreadsheet")));
 		}
@@ -356,12 +379,58 @@ void MainWindow::goToCell()
 				}
 			delete dialog;
 		}
+		
+void MainWindow::sort()
+	{
+		SortDialog dialog(this);
+		//QTableWidgetSelectionRange range=spreadsheet->slectedRange();
+		//dialog.setColumnRange('A'+range.leftColumn(),'A'+range.rightColumn());
+		
+		if(dialog.exec())
+			{
+				//SpreadsheetCompare compare;
+				//compare.keys[0]=dialog.primaryColumnCombo->currentIndex();
+				//compare.keys[1]=dialog.secondaryColumnCombo->currentIndex()-1;
+				//compare.keys[2]=dialog.tertiaryColumnCombo->currentIndex()-1;
+				//compare.ascending[0]=(dialog.primaryOrderCombo->currentIndex()==0);
+				//compare.ascending[1]=(dialog.secondaryOrderCombo->currentIndex()==0);
+				//compare.ascending[2]=(dialog.tertiaryOrderCombo->currentIndex()==0);
+				//spreadsheet->sort(compare);
+				}
+		
+		}
+		
+void MainWindow::about()
+	{
+		QMessageBox::about(this,tr("About Spreadsheet"),tr("<h2>Spreadsheet 1.1 </h2>""<p>Copyright &copy; 2008 Software Inc. "
+																												"<p>Spreadsheet is a small application that "
+																												"demonstrates QAction, QMainWindow, QMenuBar, "
+																												"QStatusBar, QTableWidget, QToolBar, and many other "
+																												"Qt class. "));
+																												
+		}
+		
+void MainWindow::writeSettings()
+	{
+		QSettings settings("Software Inc. ", "Spreadsheet");
+		
+		settings.setValue("geometry", saveGeometry());
+		settings.setValue("recentFiles", recentFiles);
+		settings.setValue("showGrid", showGridAction->isChecked());
+		//settings.setValue("autoRecalc",autoRecalcAction->isChecked());
+		}
 
-int main(int argc, char *argv[])
-{
-	QApplication app(argc,argv);
-	MainWindow *mainwindow=new MainWindow();
-	mainwindow->show();
-	return app.exec();
-	}
-	
+void MainWindow::readSettings()
+	{
+		QSettings settings("Software Inc. ", "Spreadsheet");
+		
+		restoreGeometry(settings.value("geometry").toByteArray());
+		recentFiles=settings.value("recentFiles").toStringList();
+		updateRecentFileActions();
+		
+		bool showGrid=settings.value("showGrid", true).toBool();
+		showGridAction->setChecked(showGrid);
+		
+		//bool autoRecalc=settings.value("autoRecalc",true).toBool();
+		//autoRecalcAction->setChecked(autoRecalc);
+		}

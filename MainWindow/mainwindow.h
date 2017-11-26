@@ -22,8 +22,8 @@ class MainWindow:public QMainWindow
 			bool saveAs();
 			void find();
 			void goToCell();
-			//void sort();
-			//void about();		
+			void sort();
+			void about();		
 			
 			void openRecentFile();
 			void updateStatusBar();
@@ -34,8 +34,8 @@ class MainWindow:public QMainWindow
 			void createContextMenu();
 			void createToolBars();
 			void createStatusBar();
-			//void readSettings();
-			//void writeSettings();
+			void readSettings();
+			void writeSettings();
 			bool okToContinue();
 			bool loadFile(const QString &fileName);
 			bool saveFile(const QString &fileName);
@@ -48,6 +48,7 @@ class MainWindow:public QMainWindow
 			FindDialog *findDialog;
 			QLabel *locationLabel;
 			QLabel *formulaLabel;
+			//static QStringList recentFiles;
 			QStringList recentFiles;
 			
 			
@@ -58,11 +59,13 @@ class MainWindow:public QMainWindow
 			QAction *openAction;
 			QAction *saveAction;
 			QAction *saveAsAction;
+			QAction *closeAction;
 			QAction *exitAction;
 			QAction *findAction;
 			QAction *goToCellAction;
 			QAction *selectAllAction;
 			QAction *showGridAction;
+			QAction *aboutAction;
 			QAction *aboutQtAction;
 			
 			QMenu *fileMenu;
@@ -75,7 +78,7 @@ class MainWindow:public QMainWindow
 			QToolBar *fileToolBar;
 			QToolBar *editToolBar;
 			
-			
+			//QSplashScreen *splash;
 			
 			
 				
